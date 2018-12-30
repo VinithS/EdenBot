@@ -1,3 +1,5 @@
 # ignore actual settings
-settings.json
+config.json
 
+# ignore komada dir
+node_modules
