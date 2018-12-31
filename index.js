@@ -7,7 +7,6 @@ const auth = require("./resources/auth.json");
 
 client.once("ready", () => {
     console.log(`Logged in as ${client.user.tag}!`);
-    send("Hi! To interact with me, use '" + client.prefix + "' or just @ me!");
 });
 
 
@@ -23,7 +22,16 @@ client.on("message", (message) => {
 
     if (command == "test"){
         message.channel.send("This is a test!");
-        message.channel.send("This is a voice test", tts = true);
+    }
+
+    if (command == "zach" || command == "zac"){
+        message.channel.send("Is Zach a little bitch?",{
+            tts: true
+        });
+        // pause
+        message.channel.send("Yes, Zach is a little bitch.",{
+            tts: true
+        });
     }
 });
 
