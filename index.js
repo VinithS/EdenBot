@@ -20,6 +20,11 @@ client.on("message", (message) => {
 
     console.log(args);
     console.log(command);
+
+    if (command == "test"){
+        message.channel.send("This is a test!");
+        message.channel.send("This is a voice test", tts = true);
+    }
 });
 
 client.login(auth.token);
