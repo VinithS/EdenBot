@@ -23,7 +23,7 @@ client.on("guildCreate", guild => {
     }
 
     let channel = client.channels.get(guild.systemChannelID || channelID);
-    channel.send('I have arrived!');
+    channel.send(`That was a long trip to ${guild.name}, but fear not I am here!`);
 });
 
 client.on("message", (message) => {
