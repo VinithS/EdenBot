@@ -1,22 +1,27 @@
 const Discord = require("discord.js")
 
-const Client = new Discord.Client();
+const client = new Discord.Client();
 
-const config = require("./resources/config.json");
-
-console.log(config);
+const auth = require("./resources/auth.json");
 
 
-Client.on("ready", () => {
-    console.log("Bot online");
-});
-   
-Client.on("message", (message) => {
-    if (message.content.startsWith("ping")) {
-        message.channel.send("pong!");
-    }
+client.once("ready", () => {
+    console.log(`Logged in as ${client.user.tag}!`);
+    send("Hi! To interact with me, use '" + client.prefix + "' or just @ me!");
 });
 
-Client.login(config.token);
+
+client.on("message", (message) => {
+    // has to invoke the bot using it's prefix + bot's own message
+    if (!message.content.startsWith(auth.prefix) || message.author.bot) return;
+
+    const args = message.content.slice(auth.prefix.length).split(/ +/);
+    const command = args.shift().toLowerCase();
+
+    console.log(args);
+    console.log(command);
+});
+
+client.login(auth.token);
 
 // TODO: create command hierarchy/structure

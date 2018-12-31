@@ -1,5 +1,5 @@
 # ignore actual settings
-config.json
+auth.json
 
 # ignore komada dir
 node_modules
