@@ -1,10 +1,10 @@
-const Discord = require("discord.js")
+const Discord = require('discord.js')
 // const YouTube = require('simple-youtube-api');
 // const YTDL = require('ytdl-core');
 
-const auth = require("./resources/auth.json");
-const config = require("./resources/config.json");
-const list = require("./commands/command_list.json");
+const auth = require('./resources/auth.json');
+const config = require('./resources/config.json');
+const list = require('./commands/command_list.json');
 
 const client = new Discord.Client({ disableEveryone: true });
 // const yTube = new YouTube(config.ytapi);
@@ -14,19 +14,19 @@ const queue = new Map();
 
 let musicMode = false;
 
-client.once("ready", () => {
+client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
 
 // When joining a server for the first time, give a thank you message in the general channel
-client.on("guildCreate", guild => {
+client.on('guildCreate', guild => {
     let channelID;
     let channels = guild.channels;
 
     channelLoop:
     for (let c of channels) {
         let channelType = c[1].type;
-        if (channelType === "general") {
+        if (channelType === 'general') {
             channelID = c[0];
             break channelLoop;
         }
@@ -37,7 +37,7 @@ client.on("guildCreate", guild => {
     channel.send(`Use ${auth.prefix} to call on me.\n Use the ${config.commandList} to list all the commands.`)
 });
 
-client.on("message", (message) => {
+client.on('message', (message) => {
     // has to invoke the bot using it's prefix + bot's own message
     if (!message.content.startsWith(auth.prefix) || message.author.bot) return;
 
@@ -57,25 +57,35 @@ client.on("message", (message) => {
             message.channel.send(auth.prefix + list.commands[c]);
         }
     }
-    else if (command == "zach" || command == "zac"){
-        message.channel.send("Is Zach a little bitch?",{
+    else if (command == 'zach' || command == 'zac'){
+        message.channel.send('Is Zach a little bitch?',{
             tts: true
         });
         // pause
-        message.channel.send("Yes, Zach is a little bitch.",{
+        message.channel.send('Yes, Zach is a little bitch.',{
             tts: true
         });
     }
-    else if (command == "summon"){
+    else if (command == 'summon'){
         let channel = message.member.voice.channel;
+        // check if user is in a channel
         if (channel == null){
-            message.reply("Could not join. First join a channel and then summon me!");
+            message.reply('Could not join. First join a channel and then summon me!');
             return;
         }
+
+        // check if bot has permission to join a channel
+        const permissions = channel.permissionsFor(message.client.user);
+        if (!permissions.has('CONNECT')) {
+			return message.channel.send('I don\'t have persmisson to connect to voice channels! :cry:');
+		}
         channel.join()
         .then(connection => {
             console.log('connected!');
             message.channel.send(`Ready to groove ${message.author.username}!`);
+            if(!permissions.has('SPEAK')){
+                message.channel.send(`But it seems I don\'t have permission to speak!\nFix permissions. Use ${auth.prefix}stop and resummon me.`);
+            }
             musicMode = true;
         }).catch();
     }
@@ -84,10 +94,17 @@ client.on("message", (message) => {
 function handleMusic(message){
     let args = message.content.slice(auth.prefix.length).split(/ +/);
     let command = args.shift().toLowerCase();
-    if(command == 'stop'){
+
+    // no need to check, should already be in a voice channel
+    let channel = message.member.voice.channel;
+
+    if(command == 'play'){
+
+    }
+    else if(command == 'stop'){
         // no longer music mode
         musicMode = false;
-        message.member.voice.channel.leave();
+        channel.leave();
         message.channel.send(`Fun jam session :)`);
     }
 }
