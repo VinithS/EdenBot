@@ -12,6 +12,8 @@ const client = new Discord.Client({ disableEveryone: true });
 const queue = new Map();
 
 
+let musicMode = false;
+
 client.once("ready", () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
@@ -39,6 +41,10 @@ client.on("message", (message) => {
     // has to invoke the bot using it's prefix + bot's own message
     if (!message.content.startsWith(auth.prefix) || message.author.bot) return;
 
+    if (musicMode){
+        handleMusic(message);
+        return;
+    }
     const args = message.content.slice(auth.prefix.length).split(/ +/);
     const command = args.shift().toLowerCase();
 
@@ -63,16 +69,29 @@ client.on("message", (message) => {
     else if (command == "summon"){
         let channel = message.member.voice.channel;
         if (channel == null){
-            message.channel.send("Could not join. First join a channel and then summon me!");
+            message.reply("Could not join. First join a channel and then summon me!");
             return;
         }
         channel.join()
         .then(connection => {
             console.log('connected!');
             message.channel.send(`Ready to groove ${message.author.username}!`);
+            musicMode = true;
         }).catch();
     }
 });
+
+function handleMusic(message){
+    let args = message.content.slice(auth.prefix.length).split(/ +/);
+    let command = args.shift().toLowerCase();
+    if(command == 'stop'){
+        // no longer music mode
+        musicMode = false;
+        message.member.voice.channel.leave();
+        message.channel.send(`Fun jam session :)`);
+    }
+}
+
 
 client.login(auth.token);
 
