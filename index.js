@@ -1,10 +1,16 @@
 const Discord = require("discord.js")
-
-const client = new Discord.Client();
+// const YouTube = require('simple-youtube-api');
+// const YTDL = require('ytdl-core');
 
 const auth = require("./resources/auth.json");
 const config = require("./resources/config.json");
 const list = require("./commands/command_list.json");
+
+const client = new Discord.Client({ disableEveryone: true });
+// const yTube = new YouTube(config.ytapi);
+
+const queue = new Map();
+
 
 client.once("ready", () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -53,6 +59,18 @@ client.on("message", (message) => {
         message.channel.send("Yes, Zach is a little bitch.",{
             tts: true
         });
+    }
+    else if (command == "summon"){
+        let channel = message.member.voice.channel;
+        if (channel == null){
+            message.channel.send("Could not join. First join a channel and then summon me!");
+            return;
+        }
+        channel.join()
+        .then(connection => {
+            console.log('connected!');
+            message.channel.send(`Ready to groove ${message.author.username}!`);
+        }).catch();
     }
 });
 
